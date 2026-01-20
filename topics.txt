@@ -1,6 +1,6 @@
-obesity
-crime
-population
+obesity-
+crime-
+population-
 gdp/capita
 abc
 avg temp
