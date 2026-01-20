@@ -1,0 +1,64 @@
+body, input {
+	/* background: #111;
+	color: white; */
+
+	font-family: "Inter";
+	transition: all 0.2s;
+}
+
+:root {
+	--bg: #fefefe;
+	--bg-1: #eee;
+	--bg-2: #ddd;
+}
+
+@media screen and (prefers-color-scheme: dark) {
+	:root {
+		--bg: #111;
+		--bg-1: #222;
+		--bg-2: #444;
+	}
+	body {
+		background: #111;
+		color:white;
+	}
+}
+
+h1 {
+	margin: 0;
+}
+
+table#game {
+	background:var(--bg-2);
+
+	border-collapse:separate;
+	border-spacing:0.5rem;
+	border: 1px solid lightgray;
+	border-radius: 1rem;
+}
+
+td {
+	padding: 0;
+	background:var(--bg-1);
+	font-size:3rem;
+	width: calc(max(2.5ch,4rem));
+	height: calc(max(2.5ch,4rem));
+	border-radius: .5rem;
+	box-sizing: border-box;
+}
+
+input {
+	box-sizing: border-box;
+	padding:0;
+	margin:0;
+	width:100%;
+	height:100%;
+	text-align: center;
+	background: transparent;
+	color:unset;
+	border:none;
+	font-size:inherit;
+
+	min-width: none;
+	border-radius:.5rem;
+}
