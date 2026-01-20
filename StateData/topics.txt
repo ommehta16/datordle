@@ -1,11 +1,11 @@
 obesity-
 crime-
 population-
-gdp/capita
-abc
-avg temp
-education quality
-avg rainfall
+gdp/capita-
+abc-
+avg temp-
+education quality-
+number of mcdonalds-
 cost of living index
 unemployment rate
 income equality
