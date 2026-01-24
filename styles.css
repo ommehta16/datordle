@@ -12,7 +12,7 @@ body, input {
 	--bg-2: #ddd;
 }
 
-@media screen and (prefers-color-scheme: dark) {
+/* @media screen and (prefers-color-scheme: dark) {
 	:root {
 		--bg: #111;
 		--bg-1: #222;
@@ -22,22 +22,32 @@ body, input {
 		background: #111;
 		color:white;
 	}
+} */
+
+table, th, td {
+	border:1px solid black;
+	border-collapse: collapse;
+}
+
+input {
+	border:none;
+	background:blue;
 }
 
 h1 {
 	margin: 0;
 }
 
-table#game {
+/* table#game {
 	background:var(--bg-2);
 
 	border-collapse:separate;
 	border-spacing:0.5rem;
 	border: 1px solid lightgray;
 	border-radius: 1rem;
-}
+} */
 
-td {
+/* td {
 	padding: 0;
 	background:var(--bg-1);
 	font-size:3rem;
@@ -45,9 +55,9 @@ td {
 	height: calc(max(2.5ch,4rem));
 	border-radius: .5rem;
 	box-sizing: border-box;
-}
+} */
 
-input {
+/* input {
 	box-sizing: border-box;
 	padding:0;
 	margin:0;
@@ -61,4 +71,4 @@ input {
 
 	min-width: none;
 	border-radius:.5rem;
-}
+} */
