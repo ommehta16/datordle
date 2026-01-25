@@ -187,7 +187,8 @@ function sendInput() {
 	game.categories.push(newCategory);
 
 	renderGame();
-	setTimeout(()=>{document.querySelector("input")?.focus()},0);
+	
+	setTimeout(()=>{document.querySelector("input")?.focus()},10);
 }
 
 function processState() {
