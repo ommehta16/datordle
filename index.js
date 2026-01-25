@@ -74,11 +74,6 @@ async function loadStats() {
 	game.goal = game.states[Math.floor(Math.random()*game.states.length)];
 }
 
-/** @param {string} category */
-function getPrettyCategory(category) {
-	return category;
-}
-
 /** @param {string[][]} rows */
 function flattenRows(rows) {	
 	const rowList = rows.map((el,i)=> {
@@ -105,7 +100,7 @@ function renderGame() {
 	const rows = [];
 	
 	// add header
-	const header = ["State", ...game.categories.map(getPrettyCategory)];
+	const header = ["State", ...game.categories.map(prettyCategory)];
 	rows.push(header);
 
 	const goalRow = (()=>{
@@ -162,6 +157,10 @@ function renderGame() {
 function sendInput() {
 	
 	const state = processState();
+	if (state == "") {
+		doInputError();
+		return;
+	}
 	game.guesses.push({
 		state: state
 	});
@@ -194,7 +193,7 @@ function processState() {
 			return state;
 		}
 	}
-	return chosenState;
+	return "";
 }
 
 loadStats().then(
@@ -212,4 +211,37 @@ function prettyState(state) {
 		else out += state.charAt(i);
 	}
 	return out;
+}
+
+/** @type {{[key:string]:string}} */
+const prettyCategories = {
+	"Cost of Living (2026)": "Cost of Living",
+	"Obesity (2015)": "Obesity",
+	"Hate Crimes per 100k": "Hate Crimes<sub>/100k</sub>",
+	"Violent Incidents per 100k (2024)": "Violent Incidents<sub>per 100k</sub>",
+	"Happiness Score (2026)": "Happiness Score",
+	"Income Inequality (Gini Coefficient) (2026)": "Income Inequality<sub>Gini coef.</sub>",
+	"Unemployment Rate (2025)": "Unemployment Rate",
+	"GDP per Capita (2017)": "Economy<sub>GDP/cap.</sub>",
+	"Education (Pre-K-12) Score": "Education<sub>pre-K-12</sub>",
+	"Total McDonalds_Outlets (2021)": "McDonalds",
+	" Alphabetical Order": " Alphabetical Order",
+	"Avg Temp °F (2000)": "Temperature<sub>°F</sub>",
+	"Life Expectancy (2021)": "Life Expectancy",
+	"Corporate Tax Rate (2026)": "Corporate Tax Rate",
+	"Population (2020)": "Population",
+};
+
+
+
+/** @param {string} category */
+function prettyCategory(category) {
+	if (category in prettyCategories) return prettyCategories[category];
+	
+	return category;
+}
+
+function doInputError() {
+	document.querySelector("div#input-cell")?.setAttribute("data-error","error");
+	setTimeout(()=>document.querySelector("div#input-cell")?.removeAttribute("data-error"),1000);
 }
