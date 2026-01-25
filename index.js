@@ -189,6 +189,8 @@ function sendInput() {
 	renderGame();
 	
 	setTimeout(()=>{document.querySelector("input")?.focus()},10);
+	setTimeout(()=>{document.querySelector("input")?.focus()},50);
+	setTimeout(()=>{document.querySelector("input")?.focus()},100);
 }
 
 function processState() {
