@@ -1,6 +1,6 @@
 body, input {
-	/* background: #111;
-	color: white; */
+	background: #eee;
+	color: black;
 
 	font-family: "Inter";
 	transition: all 0.2s;
@@ -10,58 +10,76 @@ body, input {
 	--bg: #fefefe;
 	--bg-1: #eee;
 	--bg-2: #ddd;
+	--accent: #008cff;
 }
 
-/* @media screen and (prefers-color-scheme: dark) {
+@media screen and (prefers-color-scheme: dark) {
 	:root {
 		--bg: #111;
 		--bg-1: #222;
 		--bg-2: #444;
+		--accent: #75c0f6;
 	}
 	body {
 		background: #111;
 		color:white;
 	}
-} */
+}
 
-table, th, td {
+/* table, th, td {
 	border:1px solid black;
 	border-collapse: collapse;
-}
+} */
 
-input {
+/* input {
 	border:none;
 	background:blue;
-}
+} */
 
 h1 {
 	margin: 0;
+	margin-bottom:2rem;
 }
 
-/* table#game {
+table#game {
 	background:var(--bg-2);
 
 	border-collapse:separate;
 	border-spacing:0.5rem;
 	border: 1px solid lightgray;
 	border-radius: 1rem;
-} */
+}
 
-/* td {
+td {
 	padding: 0;
 	background:var(--bg-1);
-	font-size:3rem;
-	width: calc(max(2.5ch,4rem));
-	height: calc(max(2.5ch,4rem));
+	/* font-size:3rem; */
+	/* width: calc(max(2.5ch,4rem)); */
+	height: calc(max(3ch,2rem));
 	border-radius: .5rem;
 	box-sizing: border-box;
-} */
+}
 
-/* input {
+td:not(:has(div)) {
+	padding:1rem;
+}
+
+thead td {
+	font-size: 1.5rem;
+	font-weight: bold;
+	text-align: center;
+}
+
+div#input-cell {
+	height: 100%;
+	display: flex;
+	width:20ch;
+	background: var(--bg-2);
+}
+input {
 	box-sizing: border-box;
 	padding:0;
 	margin:0;
-	width:100%;
 	height:100%;
 	text-align: center;
 	background: transparent;
@@ -69,6 +87,39 @@ h1 {
 	border:none;
 	font-size:inherit;
 
-	min-width: none;
+	min-width: unset;
+	width:unset;
 	border-radius:.5rem;
-} */
+	width:100%;
+	background: var(--bg-1);
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
+}
+
+button {
+	background: var(--accent);
+	height: 100%;
+	margin:0;
+	padding:0;
+	aspect-ratio: 1;
+	font-size:1.25rem;
+	border-radius: .5rem;
+	border: 1px solid transparent;
+	transition: background 0.2s;
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
+}
+
+button:hover {
+	cursor: pointer;
+	background: hsl(from var(--accent) h s calc(l + 10));
+	border: 1px solid white;
+	
+}
+div.gameContainer {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	align-items: center;
+	justify-content: center;
+}

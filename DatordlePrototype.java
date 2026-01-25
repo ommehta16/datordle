@@ -27,6 +27,11 @@ public class DatordlePrototype {
             }
         }
         System.out.println("data initialized");
+        try {
+            Category.saveCategories(categories);
+            System.out.println("saved json!");
+        }
+        catch (Exception e) { System.out.println("could not save json :("); }
     }
     public static void start(){
         //this basically shuffles the categories. generates 5 unique numbers 0-(size of categories-1), which each refer to a category

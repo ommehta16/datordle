@@ -52,6 +52,52 @@ public class Category {
         if (!State2Rank.containsKey(cleanState)) {
         return -1;
         }
+
+
         return State2Rank.get(cleanState);
+    }
+
+    // apparently javadoc needs three /s now
+    // huh
+
+
+    /// 
+    /// @param <V> Some numerical type that `String.format` recognizes is a number!
+    /// @param hashmap A hashmap! Has `String` keys and **(VERY IMPORTANTLY)** numerical values.
+    /// 
+    private static <V> String JSONifyHashMap(HashMap<String, V> hashmap) {
+        final ArrayList<String> bro = new ArrayList<>();
+
+        hashmap.forEach((String a, V b) -> { // OMFG NEVER MIND I LOVE JAVA RAHHHHH
+            bro.add(String.format("\"%s\": %f,",a, Double.parseDouble(b.toString())));
+        });
+        String out = "{";
+        for (String pair: bro) out += pair;
+        out = out.substring(0, out.length()-1); // remove trailing comma
+        out += "}";
+        return out;
+    }
+
+    private String toJSON() {
+        String out = "{ \"name\": \"%s\", \"values\": %s, \"ranks\": %s}";
+        out = String.format(out, name, JSONifyHashMap(State2Val),JSONifyHashMap(State2Rank));
+        return out;
+    }
+
+    public static void saveCategories(ArrayList<Category> categories) throws IOException {
+        String out = "{";
+        
+        for (Category category : categories) {
+            out += "\""+category.name + "\":" + category.toJSON() + ",";
+        }
+        out = out.substring(0,out.length()-1);
+        out += "}";
+
+        
+        try {
+            FileWriter f = new FileWriter("categories.json");
+            f.write(out);
+            f.close();
+        } catch (IOException e) { throw new Error(e); }
     }
 }
