@@ -155,12 +155,17 @@ function renderGame() {
 }
 
 function sendInput() {
-	
+	if (document.querySelector("div#input-cell[data-error]")) return;
 	const state = processState();
 	if (state == "") {
-		doInputError();
+		doInputError("Not a state!");
 		return;
 	}
+	if (game.guesses.find(el=>el.state==state)) {
+		doInputError("Already guessed!");
+		return;
+	}
+	
 	game.guesses.push({
 		state: state
 	});
@@ -182,6 +187,7 @@ function sendInput() {
 	game.categories.push(newCategory);
 
 	renderGame();
+	setTimeout(()=>{document.querySelector("input")?.focus()},0);
 }
 
 function processState() {
@@ -241,7 +247,17 @@ function prettyCategory(category) {
 	return category;
 }
 
-function doInputError() {
-	document.querySelector("div#input-cell")?.setAttribute("data-error","error");
-	setTimeout(()=>document.querySelector("div#input-cell")?.removeAttribute("data-error"),1000);
+/** @param {string} error */
+function doInputError(error="") {
+	const inputCell = document.querySelector("div#input-cell");
+	const inputBox = document.querySelector("input");
+	if (!inputCell || !inputBox) return;
+	
+	inputCell.setAttribute("data-error","error");
+	inputBox.value="";
+	inputBox.placeholder=error;
+	setTimeout(()=>{
+		inputCell.removeAttribute("data-error");
+		inputBox.placeholder="guess a state...";
+	},1000);
 }

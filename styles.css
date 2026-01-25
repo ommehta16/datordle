@@ -1,6 +1,6 @@
 body, input {
-	background: #eee;
-	color: black;
+	background: var(--bg);
+	color: var(--text);
 
 	font-family: "Inter";
 	transition: all 0.2s;
@@ -12,11 +12,14 @@ body {
 
 :root {
 	--bg: #fefefe;
-	--bg-1: #eee;
-	--bg-2: #ddd;
+	--bg-1: #fdfdfd;
+	--bg-2: #efefef;
 	--accent: #008cff;
+	--scrollbar: #555;
 	--text-light: #333;
-	--error: rgb(255, 129, 129);
+	--text: black;
+	--error: rgb(255, 203, 203);
+	--color-direction: -1;
 }
 
 @media screen and (prefers-color-scheme: dark) {
@@ -25,28 +28,16 @@ body {
 		--bg-1: #222;
 		--bg-2: #444;
 		--accent: #75c0f6;
+		--scrollbar: #ccc;
+		--text: white;
 		--text-light: #aaa;
 		--error: rgb(236, 68, 68);
-	}
-	body {
-		background: #111;
-		color:white;
+		--color-direction: 1;
 	}
 }
 
-/* table, th, td {
-	border:1px solid black;
-	border-collapse: collapse;
-} */
-
-/* input {
-	border:none;
-	background:blue;
-} */
-
 h1 {
 	margin: 0;
-	margin-bottom:2rem;
 }
 
 table#game {
@@ -76,6 +67,8 @@ thead td {
 	font-size: 1.5rem;
 	font-weight: bold;
 	text-align: center;
+
+	background: hsl(from var(--bg-1) h s calc(l + var(--color-direction) * 3) );
 }
 
 div#input-cell {
@@ -90,7 +83,6 @@ input {
 	margin:0;
 	height:100%;
 	text-align: center;
-	background: transparent;
 	color:unset;
 	border:none;
 	font-size:inherit;
@@ -102,7 +94,18 @@ input {
 	background: var(--bg-1);
 	border-top-right-radius: 0;
 	border-bottom-right-radius: 0;
+	border: 1px solid transparent;
 }
+
+input:focus {
+	outline:none;
+	border: 1px solid var(--accent);
+}
+input:hover {
+	border: 1px solid var(--text-light);
+	background: hsl(from var(--bg-2) h s calc(l + 10))
+}
+
 
 button {
 	background: var(--accent);
@@ -146,10 +149,21 @@ div#input-cell {
 
 div#input-cell[data-error] {
 	animation: 0.25s ease 0s shake;
+	animation-iteration-count: 1;
 }
 
 div#input-cell[data-error] input {
 	background: var(--error);
+}
+
+div#input-cell[data-error] ::placeholder {
+	color: var(--text);
+}
+
+div#input-cell[data-error] button {
+	background: hsl(from var(--accent) h 0 calc( l - var(--color-direction) * 30 ));
+
+	cursor:not-allowed;
 }
 
 div.gameContainer {
@@ -160,9 +174,11 @@ div.gameContainer {
 	justify-content: space-between;
 	height: 100vh;
 	width: 100%;
-	padding:4rem;
+	max-width:100%;
+	padding-block:4rem;
 
 	box-sizing: border-box;
+	overflow:hidden;
 }
 
 sub {
@@ -170,6 +186,7 @@ sub {
 	font-weight:lighter;
 	font-size:0.5rem;
 	color: var(--text-light);
+	text-wrap-mode: nowrap;
 }
 
 sub::before {
@@ -178,4 +195,36 @@ sub::before {
 
 sub::after {
 	content: ")"
+}
+
+div#bro {
+	max-width: 100%;
+	overflow: scroll;
+	padding-bottom:1px;
+}
+
+div#bro::-webkit-scrollbar {
+	-webkit-appearance: none;
+	width: 8px;
+	height: 8px;
+}
+
+div#bro::-webkit-scrollbar-thumb {
+	border-radius: 4px;
+	background:var(--scrollbar);
+	border: 1px solid transparent;
+}
+
+div#bro::-webkit-scrollbar-thumb:hover {
+	background: hsl(from var(--scrollbar) h s calc(l + var(--color-direction) * 10));
+	border: 1px solid hsl(from var(--scrollbar) h s calc(l + var(--color-direction) * 20));
+}
+
+.gameContainer>div.top {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	margin-bottom:1rem;
 }
