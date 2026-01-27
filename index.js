@@ -19,8 +19,9 @@
  * 	stats: {[category:string]: Category}
  * 	onUpdate: Function,
  * 	states: string[],
- * 	goal: string
- * 	won: boolean
+ * 	goal: string,
+ * 	won: boolean,
+ * 	onWin: ()=>any;
  * }} Game;
  */
 
@@ -33,15 +34,20 @@ const game = {
 	stats: {},
 	states: [],
 	goal: "",
-	won:false
+	won:false,
+	onWin: ()=>{}
 };
+
+/** @type {{[acronym:string]:string}} */
+let stateAcronyms = {};
 
 async function loadStats() {
 	// load stats for each state in [somehow]
-	const raw = await fetch("categories.json");
+
+	const [raw, acronymsRaw] = await Promise.all([fetch("categories.json"), fetch("acronyms.json")]);
 
 	/** 
-	 * @type {{
+	 * @type {[{
 	 * 	[category:string]: {
 	 * 		name:string,
 	 * 		values: {
@@ -51,9 +57,14 @@ async function loadStats() {
 	 * 			[state:string]:number
 	 * 		}
 	 * 	}
-	 * }} 
+	 * }, 
+	 * {
+	 * [acronym:string]: string
+	 * }
+	 * ]} 
 	 */
-	const data = await raw.json();
+	const [data, acronymsData] = await Promise.all([raw.json(), acronymsRaw.json()]);
+	stateAcronyms=acronymsData;
 
 	for (const categoryName of Object.keys(data)) {
 		const categoryData = data[categoryName];
@@ -77,7 +88,7 @@ async function loadStats() {
 /** @param {string[][]} rows */
 function flattenRows(rows) {	
 	const rowList = rows.map((el,i)=> {
-		const rowInner = el.map((inner)=>`<td>${inner}</td>`).join("");
+		const rowInner = el.map((inner)=>inner.startsWith("<td")&&inner.endsWith("</td>") ? inner : `<td>${inner}</td>`).join("");
 		return `<tr>${rowInner}</tr>`;
 	});
 	if (rowList.length == 0) return "";
@@ -142,7 +153,7 @@ function renderGame() {
 		rows.push(rowParts);
 	}
 	
-	const inputRow = [`<div id="input-cell"><input placeholder="guess a state..."/><button id="sendit">?</button></div>`, ...game.categories.map(e=>``)];
+	const inputRow = [`<td colspan="${Math.min(rows[0].length,1)}"><div id="input-cell"><input placeholder="guess a state..."/><button id="sendit" title="Submit guess...">?</button></div></td>`, /*...game.categories.map(e=>``)*/];
 	
 	if (!game.won) rows.push(inputRow);
 	
@@ -171,6 +182,7 @@ function sendInput() {
 	});
 	if (state == game.goal) {
 		game.won=true;
+		game.onWin();
 	}
 
 	if (game.categories.length == Object.keys(game.stats).length) {
@@ -188,29 +200,105 @@ function sendInput() {
 
 	renderGame();
 	
-	setTimeout(()=>{document.querySelector("input")?.focus()},10);
-	setTimeout(()=>{document.querySelector("input")?.focus()},50);
-	setTimeout(()=>{document.querySelector("input")?.focus()},100);
+	const getFocus = ()=>{
+		const inp=document.querySelector("input");
+		if (!inp) return getFocus();
+		inp.focus();
+	}
+	setTimeout(getFocus,10);
+	setTimeout(getFocus,100);
+}
+
+/** @param {string} a @param {string} b */
+function editDistance(a, b) {
+
+	const stringA = a.toLocaleLowerCase().replaceAll(" ","");
+	const stringB = b.toLocaleLowerCase().replaceAll(" ","");
+
+	/** @type {number[][]} */
+	let mem = [];
+	for (let i=0;i<=a.length;i++) {
+		const row=[];
+		for (let j=0;j<=b.length;j++) row.push(Infinity);
+		mem.push(row);
+	}
+	
+	/** 
+	 * @param {number} n how far into a
+	 * @param {number} m how far into b
+	 * @returns {number}
+	 */
+	const editDistRec=(n, m)=>{
+		if (n==0) return m;
+		if (m==0) return n;
+
+		if (mem[n][m] != Infinity) return mem[n][m];
+
+		if (stringA.charAt(n-1) == stringB.charAt(m-1)) {
+			mem[n-1][m-1] = editDistRec(n-1,m-1);
+			return mem[n-1][m-1];
+		}
+		
+		return Math.min(
+			editDistRec(n,m-1), // add to b
+			editDistRec(n-1,m), // add to a
+			editDistRec(n-1,m-1) // insert in one
+		)+1;
+	}
+
+	return editDistRec(a.length, b.length);
 }
 
 function processState() {
 	const states = game.states;
-	let chosenState = document.querySelector("input")?.value ?? "ERROE"; // it will have a value, this is just for jsdoc's state
-	chosenState = chosenState.toLocaleLowerCase(); // idk how this would be different than toLowerCase but um lets not take any risks lol
-	for (const state of states) {
-		if (chosenState.replace(" ", "") == state.replace(" ","")) {
-			return state;
-		}
+
+	const TYPOTHRESHOLD = 2; // i.e. can be wrong by literally our entire length
+	
+	let chosenState = document.querySelector("input")?.value; // it will have a value, this is just for jsdoc's state
+	if (!chosenState) return "";
+
+	if (chosenState.toUpperCase() in stateAcronyms) chosenState = stateAcronyms[chosenState.toUpperCase()];
+	chosenState=chosenState.toLocaleLowerCase().replaceAll(" ","");
+	const cleanStates = states.map(el=>[el, el.replaceAll(" ","").toLocaleLowerCase()]);
+	for (const [state, clean] of cleanStates) {
+		if (chosenState.replace(" ", "") == clean) return state;
 	}
+
+	let closestDistance=Infinity;
+	let closestState="";
+	let tie=false;
+
+	let closestStart=Infinity;
+	let startState="";
+
+	for (const [state, clean] of cleanStates) {
+		if (clean.startsWith(chosenState.toLowerCase().replaceAll(" ",""))) {
+			const dist = (clean.length - chosenState.length)/chosenState.length;
+			if (dist > closestStart) continue;
+			closestStart=dist;
+			startState=state;
+		}
+
+		// if (clean.charAt(0) != chosenState.charAt(0)) continue; // they didnt even try :sob:
+		const dist = editDistance(clean, chosenState)/chosenState.length;
+		if (dist > closestDistance) continue;
+		if (dist == closestDistance) {
+			tie=true;
+			continue;
+		}
+		tie=false;
+		closestState=state;
+		closestDistance=dist;
+		
+	}
+	if (closestStart < closestDistance*2 && closestStart<TYPOTHRESHOLD) return startState;
+	
+	if (!tie && closestDistance<TYPOTHRESHOLD) return closestState;
+
+	console.log(closestState, closestDistance);
+
 	return "";
 }
-
-loadStats().then(
-	() =>  {
-		game.categories.push(Object.keys(game.stats)[Math.floor(Math.random()*Object.keys(game.stats).length)]);
-		renderGame();
-	}
-)
 
 /** @param {string} state */
 function prettyState(state) {
@@ -264,3 +352,69 @@ function doInputError(error="") {
 		inputBox.placeholder="guess a state...";
 	},1000);
 }
+
+async function reset() {
+	const gameElement = document.querySelector("#game");
+	if (!gameElement) {
+		setTimeout(reset, 100);
+		return;
+	}
+	console.log("resetting")
+	gameElement.removeAttribute("won");
+	game.guesses=[];
+	game.meta={}
+	game.won=false;
+	await loadStats();
+	
+	game.categories=[];
+	game.categories.push(Object.keys(game.stats)[Math.floor(Math.random()*Object.keys(game.stats).length)]);
+	renderGame();
+	setTimeout(()=>{document.querySelector("input")?.focus()},100);
+}
+
+game.onWin = () => {
+
+	const gameElement = document.querySelector("#game");
+	if (!gameElement) return;
+
+	const winStats = document.querySelector("#win-stats");
+	if (!winStats) return;
+
+	winStats.innerHTML=`It took you ${game.guesses.length < 5 ? "just " : game.guesses.length > 15 ? "a whole " : ""
+	} ${game.guesses.length} ${game.guesses.length == 1 ? "guess" : "guesses"}!${
+		(game.categories.length==Object.keys(game.stats).length) ?
+			` Over those guesses, you revealed all ${game.categories.length} categories!` :
+		(game.guesses.length == game.states.length) ? 
+			` Over those guesses, you checked <b>all 50 states</b>!` :
+			``
+	}`;
+
+	gameElement.setAttribute("won","true");
+	
+	const confettiCount = 200;
+	const confettiDefaults = {
+		origin: { y: 0.7 }
+	};
+	
+	/** @param {number} particleRatio @param {{}} opts */ // @ts-ignore
+	const fire = (particleRatio, opts) => confetti({...confettiDefaults, ...opts, particleCount: Math.floor(confettiCount*particleRatio)});
+
+	fire(0.25, { spread: 26, startVelocity: 55, });
+	fire(0.2, { spread: 60, });
+	fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+	fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+	fire(0.1, { spread: 120, startVelocity: 45 });
+
+	// @ts-ignore
+	confetti({
+		particleCount: 100,
+		spread: 70,
+		origin: { y: 0.6 }
+	//@ts-ignore
+	}).then(() => {document.querySelector("dialog#you-win").showModal()});
+	
+}
+
+// @ts-ignore
+document.querySelector("#you-win button#play-again")?.addEventListener("click",()=>{reset(); document.querySelector("dialog#you-win").close();});
+reset();

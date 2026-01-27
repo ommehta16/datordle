@@ -9,11 +9,7 @@
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
 
-	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-		integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-
-	<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-		integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+	<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.min.js"></script>
 
 	<link rel="stylesheet" href="styles.css">
 	<script src="index.js" defer></script>
@@ -33,7 +29,7 @@
 		</div>
 	</div>
 	<dialog id="info-box">
-		<div id="info-inner">
+		<div class="info-inner">
 			<h2>Datordle</h2>
 			<i class="small">A game about states' stats!</i>
 			<h3>How to Play</h3>
@@ -53,7 +49,16 @@
 			<a class="github-link" href="https://github.com/ommehta16/datordle/" target="_blank"><i class="fa-brands fa-github"></i>See our code</a>!
 		</div>
 		<footer> <span>Made by <a href="https://github.com/ommehta16/" target="_blank">Om</a> & <a href="https://github.com/PhantomFrenzy151" target="_blank">Branden</a></span><span>&copy;Om Mehta & Branden Zhou 2026</span></footer>
-		<button class="close" onclick="document.querySelector(`dialog#info-box`).close()"><i class="fa-solid fa-x"></i></button>
+		<button class="close" onclick="document.querySelector(`dialog#info-box`).close()"><i class="fa-solid fa-x">X</i></button>
 	</dialog>
-	<button class="info" onclick="document.querySelector(`dialog#info-box`).showModal()"><i class="fa-solid fa-info"></i></button>
+	<dialog id="you-win">
+		<div class="info-inner">
+			<h2>You won!</h2>
+			<p id="win-stats">stats go here</p>
+			<button id="play-again">Play again <i class="fa-solid fa-arrow-right">→</i></button>
+		</div>
+		<footer> <span>Made by <a href="https://github.com/ommehta16/" target="_blank">Om</a> & <a href="https://github.com/PhantomFrenzy151" target="_blank">Branden</a></span><span>&copy;Om Mehta & Branden Zhou 2026</span></footer>
+		<button class="close" onclick="document.querySelector(`dialog#you-win`).close()"><i class="fa-solid fa-x">X</i></button>
+	</dialog>
+	<button class="info" onclick="document.querySelector(`dialog#info-box`).showModal()"><i class="fa-solid fa-info">i</i></button>
 </body>

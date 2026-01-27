@@ -15,6 +15,7 @@ body {
 	--bg-1: #fdfdfd;
 	--bg-2: #efefef;
 	--accent: #008cff;
+	--accent-alt: rgb(149, 214, 237);
 	--scrollbar: #555;
 	--text-light: #333;
 	--text: black;
@@ -22,6 +23,7 @@ body {
 	--color-direction: -1;
 	--shadow-color: #00000001;
 	--shadow-hover-color: #0000000a;
+	--win-bg: rgb(171, 228, 186);
 }
 
 @media screen and (prefers-color-scheme: dark) {
@@ -30,6 +32,7 @@ body {
 		--bg-1: #222;
 		--bg-2: #444;
 		--accent: #75c0f6;
+		--accent-alt: var(--accent);
 		--scrollbar: #ccc;
 		--text: white;
 		--text-light: #aaa;
@@ -37,6 +40,7 @@ body {
 		--color-direction: 1;
 		--shadow-hover-color: #ffffff0a;
 		--shadow-color: #ffffff01;
+		--win-bg: rgb(76, 163, 99);
 	}
 }
 
@@ -61,6 +65,15 @@ td {
 	height: calc(max(3ch,2rem));
 	border-radius: .5rem;
 	box-sizing: border-box;
+	transition: background 0.2s;
+}
+
+table#game:not([won]) tbody tr:last-child td {
+	background:transparent;
+}
+
+td:hover {
+	background:hsl(from var(--bg-1) h s calc(l + var(--color-direction) * 5) )
 }
 
 td:not(:has(div)) {
@@ -81,6 +94,11 @@ div#input-cell {
 	width:20ch;
 	background: var(--bg-2);
 }
+
+td[colspan]:not([colspan=1]) {
+	width:unset;
+}
+
 input {
 	box-sizing: border-box;
 	padding:0;
@@ -176,7 +194,7 @@ div.gameContainer {
 	flex-wrap: nowrap;
 	align-items: center;
 	justify-content: space-between;
-	height: 100vh;
+	height: 100svh;
 	width: 100%;
 	max-width:100%;
 	padding-top:4rem;
@@ -275,7 +293,7 @@ button.info:active {
 	bottom: 0.9rem;
 }
 
-button.close:hover {
+button.close:active {
 	top:1.1rem;
 }
 
@@ -293,7 +311,7 @@ dialog {
 }
 
 dialog[open] {
-	animation: fade-in 0.2s ease forwards;
+	animation: fade-in 0.5s ease forwards;
 }
 
 dialog {
@@ -303,15 +321,17 @@ dialog {
 	border-radius:1rem;
 	min-width:calc(min(50%, 100vw - 2rem));
 	max-width: calc(min(80ch, 100vw - 2rem));
-
+	opacity:0;
 	padding:0;
 }
 
 dialog::backdrop {
 	backdrop-filter: blur(1rem);
+	opacity:0;
+	animation: fade-in 0.5s ease forwards;
 }
 
-dialog #info-inner {
+dialog .info-inner {
 	padding:1rem;
 }
 
@@ -355,4 +375,58 @@ dialog h3 {
 
 i.small {
 	color: var(--text-light);
+}
+
+#game[won=true] tbody tr:last-child td {
+	background: var(--win-bg);
+}
+
+#play-again {
+	width:100%;
+	min-height:4rem;
+	font-size: 2rem;
+	border-radius:0.5rem;
+	color:var(--text-color);
+	border: 1px solid var(--text-color);
+	background: linear-gradient(90deg,var(--accent-alt) 0%, var(--accent-alt) 50%, var(--bg-2) 50%, var(--bg-2) 100%);
+	background-repeat:no-repeat;
+	background-size:200%;
+	background-position-x:100%;
+	position:relative;
+	top:0;
+
+	transition: background-position 0.2s, inset 0.2s;
+}
+
+#play-again:hover {
+	cursor:pointer;
+	/* background: hsl(from var(--bg-2) h s calc(l + 10)); */
+	background-position-x:0%
+}
+
+#play-again:active {
+	top:0.2rem;
+}
+
+#play-again i {
+	position:relative;
+	left:0;
+	transition: left 0.2s;
+}
+
+#play-again:active i {
+	left:0.5rem;
+}
+
+.fa-solid {
+	font-style: normal;
+}
+
+dialog#you-win {
+	animation: fade-in 2s ease forwards;
+}
+
+dialog#you-win::backdrop {
+	opacity: 0;
+	animation: fade-in 0.2s ease forwards;
 }
