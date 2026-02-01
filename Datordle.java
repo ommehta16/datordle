@@ -1,6 +1,6 @@
 import java.io.*;
 import java.util.*;
-public class DatordlePrototype {
+public class Datordle {
     static ArrayList<Category> categories = new ArrayList<>(); //all categories are here
     static int tries = 0;
     static String[] states = {
