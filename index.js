@@ -239,11 +239,12 @@ function editDistance(a, b) {
 			return mem[n-1][m-1];
 		}
 		
-		return Math.min(
+		mem[n][m] = Math.min(
 			editDistRec(n,m-1), // add to b
 			editDistRec(n-1,m), // add to a
 			editDistRec(n-1,m-1) // insert in one
 		)+1;
+		return mem[n][m];
 	}
 
 	return editDistRec(a.length, b.length);
