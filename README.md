@@ -3,8 +3,7 @@
 
 ## Demo
 Datordle is **live** at [ommehta16.github.io/datordle](https://ommehta16.github.io/datordle)!
-
-[gif goes here]
+![demo](./demo.gif)
 
 ## How to Play
 Your task is to find a particular state. The game will give you hints about said state's stats over the course of the game! For example, you might know that the state is #2 in Education.
