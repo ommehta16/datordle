@@ -3,6 +3,7 @@
 
 ## Demo
 Datordle is **live** at [ommehta16.github.io/datordle](https://ommehta16.github.io/datordle)!
+
 ![demo](./demo.gif)
 
 ## How to Play
